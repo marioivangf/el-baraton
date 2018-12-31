@@ -1,0 +1,4 @@
+export const ADD_TO_CART = "ADD TO CART";
+export const REMOVE_FROM_CART = "REMOVE FROM CART";
+export const SET_QUANTITY_IN_CART = "SET QUANTITY IN CART";
+export const CHECKOUT = "CHECKOUT";
