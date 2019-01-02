@@ -34155,11 +34155,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _react = _interopRequireDefault(require("react"));
+var _react = _interopRequireWildcard(require("react"));
 
 var _reactRouterDom = require("react-router-dom");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
@@ -34171,19 +34171,53 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 var Category = function Category(_ref) {
   var id = _ref.id,
       name = _ref.name,
       sublevels = _ref.sublevels,
       ids = _ref.ids;
-  return _react.default.createElement("nav", {
+
+  var _useState = (0, _react.useState)(true),
+      _useState2 = _slicedToArray(_useState, 2),
+      collapsed = _useState2[0],
+      collapse = _useState2[1];
+
+  var events = (0, _react.useMemo)(function () {
+    if (matchMedia("(pointer:fine)").matches) {
+      // Has cursor
+      return {
+        onMouseEnter: function onMouseEnter() {
+          return collapse(false);
+        },
+        onMouseLeave: function onMouseLeave() {
+          return collapse(true);
+        }
+      };
+    }
+
+    return {
+      onClick: function onClick(e) {
+        collapse(!collapsed);
+        e.stopPropagation();
+      }
+    };
+  }, [collapsed]);
+  return _react.default.createElement("nav", _extends({
     className: "category"
-  }, sublevels ? _react.default.createElement("div", {
+  }, events), sublevels ? _react.default.createElement("div", {
     className: "category-title"
-  }, name) : _react.default.createElement(_reactRouterDom.Link, {
+  }, name, " ", collapsed.toString()) : _react.default.createElement(_reactRouterDom.Link, {
     className: "category-title",
     to: "/cat/".concat(ids.join("/"), "/").concat(id)
-  }, name), sublevels && _react.default.createElement("nav", {
+  }, name), sublevels && !collapsed && _react.default.createElement("nav", {
     className: "subcategories"
   }, sublevels.map(function (cat) {
     return _react.default.createElement(Category, _extends({
@@ -34219,14 +34253,16 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 
 var CategoriesView = function CategoriesView() {
   return _react.default.createElement("div", {
-    className: "categories-cont"
+    className: "view-wrapper categories-cont"
+  }, _react.default.createElement("div", {
+    className: "wrapper--pad"
   }, _react.default.createElement("nav", {
     className: "categories"
   }, _api.categories.map(function (cat) {
     return _react.default.createElement(_Category.default, _extends({
       key: cat.id
     }, cat));
-  })));
+  }))));
 };
 
 var _default = CategoriesView;
@@ -34804,31 +34840,51 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 var Cart =
 /*#__PURE__*/
 function (_PureComponent) {
   _inherits(Cart, _PureComponent);
 
-  function Cart() {
+  function Cart(props) {
+    var _this;
+
     _classCallCheck(this, Cart);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(Cart).apply(this, arguments));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Cart).call(this, props));
+    _this.state = {
+      collapsed: true
+    };
+    _this.onClick = _this.onClick.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    return _this;
   }
 
   _createClass(Cart, [{
-    key: "render",
-    value: function render() {
-      var _this = this;
-
-      return _react.default.createElement("div", null, _react.default.createElement("h2", null, "Carrito"), this.props.items.map(function (_ref) {
+    key: "onClick",
+    value: function onClick() {
+      document.body.classList.toggle("--cart-opened");
+      this.setState({
+        collapsed: !document.body.classList.contains("--cart-opened")
+      });
+    }
+  }, {
+    key: "renderContent",
+    value: function renderContent() {
+      var _this$props = this.props,
+          items = _this$props.items,
+          removeFromCart = _this$props.removeFromCart,
+          checkout = _this$props.checkout,
+          setQuantityInCart = _this$props.setQuantityInCart;
+      return _react.default.createElement("div", {
+        className: "wrapper cart-cont"
+      }, _react.default.createElement("h2", null, "Carrito"), items.map(function (_ref) {
         var product = _ref.product,
             quantity = _ref.quantity;
         return _react.default.createElement("div", {
@@ -34839,20 +34895,36 @@ function (_PureComponent) {
           max: product.quantity,
           value: quantity,
           onChange: function onChange(e) {
-            return _this.props.setQuantityInCart(product.id, e.target.value);
+            return setQuantityInCart(product.id, e.target.value);
           }
         })), _react.default.createElement("div", null, _react.default.createElement("button", {
           type: "button",
-          onClick: function onClick(e) {
-            return _this.props.removeFromCart(product.id);
+          onClick: function onClick() {
+            return removeFromCart(product.id);
           }
         }, "Quitar")));
       }), _react.default.createElement("div", null, _react.default.createElement("button", {
         type: "button",
-        onClick: function onClick(e) {
-          return _this.props.checkout();
-        }
+        onClick: checkout
       }, "CHECKOUT")));
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var items = this.props.items;
+      var collapsed = this.state.collapsed;
+      var totalItems = items.reduce(function (a, b) {
+        return a + b.quantity;
+      }, 0);
+      var buttonClasses = "button --icon";
+      if (!collapsed) buttonClasses += " --active";
+      return _react.default.createElement("div", null, _react.default.createElement("button", {
+        type: "button",
+        className: buttonClasses,
+        onClick: this.onClick
+      }, totalItems !== 0 && _react.default.createElement("span", null, "(", totalItems, ")"), _react.default.createElement("i", {
+        className: "material-icons"
+      }, "shopping_cart")), !collapsed && this.renderContent());
     }
   }]);
 
@@ -34890,16 +34962,42 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _react = _interopRequireDefault(require("react"));
+var _react = _interopRequireWildcard(require("react"));
 
 var _Cart = _interopRequireDefault(require("../containers/Cart"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 var NavBar = function NavBar() {
-  return _react.default.createElement("div", {
+  var _useState = (0, _react.useState)(true),
+      _useState2 = _slicedToArray(_useState, 2),
+      cartHidden = _useState2[0],
+      toggleCart = _useState2[1];
+
+  var onClick = function onClick() {
+    document.body.classList.toggle("--cart-opened");
+    toggleCart(!document.body.classList.contains("--cart-opened"));
+  };
+
+  var buttonClasses = "button --icon";
+  if (!cartHidden) buttonClasses += " --active";
+  return _react.default.createElement(_react.Fragment, null, _react.default.createElement("div", {
     className: "nav-bar"
-  }, _react.default.createElement(_Cart.default, null));
+  }, _react.default.createElement("div", {
+    className: "full row wrapper --center"
+  }, _react.default.createElement("div", {
+    className: "flex1"
+  }, "El Barat\xF3n"), _react.default.createElement(_Cart.default, null))));
 };
 
 var _default = NavBar;
@@ -34928,66 +35026,27 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-var Root =
-/*#__PURE__*/
-function (_PureComponent) {
-  _inherits(Root, _PureComponent);
-
-  function Root() {
-    _classCallCheck(this, Root);
-
-    return _possibleConstructorReturn(this, _getPrototypeOf(Root).apply(this, arguments));
-  }
-
-  _createClass(Root, [{
-    key: "render",
-    value: function render() {
-      var location = this.props.location;
-      return _react.default.createElement("div", {
-        style: {
-          height: "100%"
-        }
-      }, _react.default.createElement(_NavBar.default, null), _react.default.createElement(_reactTransitionGroup.TransitionGroup, {
-        style: {
-          height: "100%"
-        }
-      }, _react.default.createElement(_reactTransitionGroup.CSSTransition, {
-        key: location.key,
-        classNames: "page-trans",
-        timeout: 250
-      }, _react.default.createElement(_reactRouterDom.Switch, {
-        location: location
-      }, _react.default.createElement(_reactRouterDom.Route, {
-        exact: true,
-        path: "/",
-        component: _CategoriesView.default
-      }), _react.default.createElement(_reactRouterDom.Route, {
-        path: "/cat/:ids*",
-        component: _CategoryView.default
-      })))));
-    }
-  }]);
-
-  return Root;
-}(_react.PureComponent);
+var Root = function Root(_ref) {
+  var location = _ref.location;
+  return _react.default.createElement("div", {
+    className: "root-wrapper"
+  }, _react.default.createElement(_NavBar.default, null), _react.default.createElement(_reactTransitionGroup.TransitionGroup, {
+    className: "content-wrapper"
+  }, _react.default.createElement(_reactTransitionGroup.CSSTransition, {
+    key: location.key,
+    classNames: "page-trans",
+    timeout: 250
+  }, _react.default.createElement(_reactRouterDom.Switch, {
+    location: location
+  }, _react.default.createElement(_reactRouterDom.Route, {
+    exact: true,
+    path: "/",
+    component: _CategoriesView.default
+  }), _react.default.createElement(_reactRouterDom.Route, {
+    path: "/cat/:ids*",
+    component: _CategoryView.default
+  })))));
+};
 
 var _default = (0, _reactRouterDom.withRouter)(Root);
 

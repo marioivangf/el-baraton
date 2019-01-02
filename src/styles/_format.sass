@@ -4,10 +4,40 @@
 html
   font-family: "Mukta", sans-serif
   box-sizing: border-box
-  background-color: #E9E9E9
 
 body
   margin: 0
 
 html, body, #root, #root > div
   height: 100%
+
+.wrapper
+  +padding(null 2rem)
+.wrapper--pad
+  +padding(2rem)
+
+.row
+  display: flex
+  flex-direction: row
+.col
+  display: flex
+  flex-direction: column
+
+.row, .col
+  &.--center
+    align-items: center
+  &.--center-center
+    align-items: center
+    justify-content: center
+
+.flex1
+  flex: 1
+
+.full
+  height: 100%
+
++after(tablet)
+  .wrapper
+    +padding(null 4rem)
+  .wrapper--pad
+    +padding(4rem)

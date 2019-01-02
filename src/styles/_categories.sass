@@ -1,5 +1,7 @@
 .categories-cont
-  padding: 2rem
+  height: 100%
+  overflow-x: hidden
+  overflow-y: auto
 
 .categories
   height: 100%
@@ -9,7 +11,6 @@
 
 .categories > .category
   width: 100%
-  flex: 1
   text-align: center
   padding: 1rem
   background-color: white
@@ -24,7 +25,6 @@
   padding: 0.5rem
   background-color: rgba(black, 0.1)
   .subcategories
-    display: none
     padding: 0.5rem
 
 .page-trans-enter
@@ -54,14 +54,13 @@
 
 +after(phone-land)
   .categories-cont
-    height: 100%
-    padding: 4rem
+    overflow-x: auto
+    overflow-y: hidden
   .categories
+    display: inline-flex
     flex-direction: row
   .categories > .category
+    flex: 1
     min-width: 200px
     margin-bottom: 0
-  .category .category
-    &:hover > .subcategories
-      display: block
 

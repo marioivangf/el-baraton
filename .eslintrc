@@ -6,6 +6,7 @@
     "import/prefer-default-export": 0,
     "space-before-function-paren": ["error", "always"],
     "react/prop-types": 0,
+    "react/jsx-one-expression-per-line": 0,
     "object-curly-newline": ["error", {
       "ObjectPattern": { "multiline": true, "minProperties": 6 },
     }]

@@ -1,0 +1,15 @@
+.button
+  appearance: none
+  padding: 0
+  margin: 0
+  border: none
+  background: none
+  &.--icon
+    +size(2rem)
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    i
+      color: gray
+    &.--active i
+      color: $primary-color

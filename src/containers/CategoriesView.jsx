@@ -4,10 +4,12 @@ import { categories } from "../api";
 import Category from "./Category";
 
 const CategoriesView = () => (
-  <div className="categories-cont">
-    <nav className="categories">
-      {categories.map(cat => <Category key={cat.id} {...cat} />)}
-    </nav>
+  <div className="view-wrapper categories-cont">
+    <div className="wrapper--pad">
+      <nav className="categories">
+        {categories.map(cat => <Category key={cat.id} {...cat} />)}
+      </nav>
+    </div>
   </div>
 );
 
