@@ -1,0 +1,18 @@
+$swift-out: cubic-bezier(.55,0,.1,1)
+$breakpoints: (phone: 320px, phone-land: 568px, tablet: 768px, tablet-land: 1024px, laptop: 1200px, desktop: 1600px)
+
+=after($bp)
+  @if not map-has-key($breakpoints, $bp)
+    @media (min-width: #{$bp})
+      @content
+  @else
+    @media (min-width: map-get($breakpoints, $bp))
+      @content
+
+=before($bp)
+  @if not map-has-key($breakpoints, $bp)
+    @media (max-width: #{$bp})
+      @content
+  @else
+    @media (max-width: map-get($breakpoints, $bp))
+      @content

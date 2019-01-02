@@ -30,9 +30,9 @@ class Cart extends PureComponent {
   }
 }
 
-const mapStateToProps = ({ cart: { ids, quantityById } }) => {
-  const items = ids.map(id => ({
-    quantity: quantityById[id],
+const mapStateToProps = ({ cart }) => {
+  const items = Object.keys(cart).map(id => ({
+    quantity: cart[id],
     product: products.find(p => p.id === id),
   }));
   return { items };
