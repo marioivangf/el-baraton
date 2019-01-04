@@ -1,0 +1,125 @@
+.input
+  transition: box-shadow 100ms
+  appearance: none
+  height: 32px
+  padding: 0 0.5rem
+  margin: 0
+  border: none
+  background-color: rgba(black, 0.05)
+  border-radius: $radius
+  font-size: 1rem
+  color: rgba(black, 0.8)
+  box-shadow: 0 0 0 -1px $primary-color
+  &.--expand
+    width: 100%
+  &:focus
+    transition: box-shadow 300ms
+    outline: none
+    box-shadow: 0 0 0 $radius $primary-color
+
+$track-w: 12.5em
+$track-h: .25em
+$thumb-d: 1.5em
+
+@mixin track()
+  box-sizing: border-box
+  border: none
+  width: $track-w
+  height: $track-h
+  background: #ccc
+
+@mixin track-none()
+  background: transparent !important
+
+@mixin thumb()
+  pointer-events: all
+  box-sizing: border-box
+  border: none
+  width: $thumb-d
+  height: $thumb-d
+  border-radius: 50%
+  background: $primary-color
+
+.slider
+  margin: 0
+  padding: 0
+  width: $track-w
+  height: $thumb-d
+  background: transparent
+  &.--expand
+    width: 100%
+  &:focus
+    outline: none
+  &::-webkit-slider-runnable-track
+    @include track
+  &::-moz-range-track
+    @include track
+  &::-ms-track
+    @include track
+  &::-webkit-slider-thumb
+    margin-top: .5*($track-h - $thumb-d)
+    @include thumb
+  &::-moz-range-thumb
+    @include thumb
+  &::-ms-thumb
+    margin-top: 0
+    @include thumb
+  &::-ms-tooltip
+    display: none
+  &, &::-webkit-slider-thumb
+    -webkit-appearance: none
+
+.rangeslider
+  position: relative
+  display: inline-flex
+  &.--expand
+    width: 100%
+  .slider
+    pointer-events: none
+    &:focus
+      outline: none
+  .slider:last-of-type
+    +position(absolute, 0)
+    &::-webkit-slider-runnable-track
+      @include track-none
+    &::-moz-range-track
+      @include track-none
+    &::-ms-track
+      @include track-none
+
+.badge-span
+  display: inline-block
+  padding: 0.5rem 0
+  color: rgba(black, 0.5)
+
+.hidden-box
+  display: block
+  position: relative
+  vertical-align: middle
+  i
+    vertical-align: middle
+    margin-right: 0.3rem
+    color: rgba(black, 0.5)
+  span
+    vertical-align: middle
+  input
+    position: absolute
+    opacity: 0
+    cursor: pointer
+    height: 0
+    width: 0
+  input:checked + i
+    color: $primary-color
+
+.form-row
+  display: block
+  margin-bottom: 1.5rem
+  line-height: 1
+
+.form-label
+  display: block
+  font-size: 0.8rem
+  font-weight: bold
+  text-transform: uppercase
+  color: rgba(black, 0.5)
+  margin-bottom: 0.5rem

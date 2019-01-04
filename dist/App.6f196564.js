@@ -34159,6 +34159,8 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _reactRouterDom = require("react-router-dom");
 
+var _reactTransitionGroup = require("react-transition-group");
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
@@ -34214,7 +34216,7 @@ var Category = function Category(_ref) {
     className: "category"
   }, events), sublevels ? _react.default.createElement("div", {
     className: "category-title"
-  }, name, " ", collapsed.toString()) : _react.default.createElement(_reactRouterDom.Link, {
+  }, name) : _react.default.createElement(_reactRouterDom.Link, {
     className: "category-title",
     to: "/cat/".concat(ids.join("/"), "/").concat(id)
   }, name), sublevels && !collapsed && _react.default.createElement("nav", {
@@ -34233,7 +34235,7 @@ Category.defaultProps = {
 };
 var _default = Category;
 exports.default = _default;
-},{"react":"../node_modules/react/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js"}],"containers/CategoriesView.jsx":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","react-transition-group":"../node_modules/react-transition-group/index.js"}],"containers/CategoriesView.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -34283,6 +34285,7 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 
 var Slider = function Slider(props) {
   return _react.default.createElement("input", _extends({
+    className: "slider --expand",
     type: "range"
   }, props));
 };
@@ -34355,13 +34358,15 @@ var RangeSlider = function RangeSlider(_ref) {
     max: max
   }, rest);
 
-  return _react.default.createElement("div", null, _react.default.createElement(_Slider.default, _extends({}, props, {
+  return _react.default.createElement("div", {
+    className: "rangeslider --expand"
+  }, _react.default.createElement(_Slider.default, _extends({}, props, {
     name: "min",
     value: range[0]
   })), _react.default.createElement(_Slider.default, _extends({}, props, {
     name: "max",
     value: range[1]
-  })), _react.default.createElement("div", null, range.join(",")));
+  })));
 };
 
 var _default = RangeSlider;
@@ -34378,16 +34383,31 @@ var _react = _interopRequireDefault(require("react"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var productClass = function productClass(available) {
+  return available ? "product" : "product --unavailable";
+}; // eslint-disable-line
+
+
 var Product = function Product(_ref) {
   var product = _ref.product,
       onClick = _ref.onClick;
   return _react.default.createElement("div", {
-    style: {
-      marginBottom: "1rem"
-    }
-  }, _react.default.createElement("div", null, product.name), _react.default.createElement("div", null, product.quantity), _react.default.createElement("div", null, product.price), _react.default.createElement("div", null, product.available ? "Available" : "Not Available"), _react.default.createElement("div", null, _react.default.createElement("button", {
+    className: productClass(product.available)
+  }, _react.default.createElement("div", {
+    className: "product-title"
+  }, product.name), _react.default.createElement("div", {
+    className: "product-quantity"
+  }, product.quantity, " disponibles"), _react.default.createElement("div", {
+    className: "row --center --wrap"
+  }, _react.default.createElement("div", {
+    className: "flex1"
+  }, _react.default.createElement("div", {
+    className: "product-price text-nowrap"
+  }, "$ ", product.price.toLocaleString())), _react.default.createElement("div", null, _react.default.createElement("button", {
+    className: "button --normal",
+    type: "button",
     onClick: onClick
-  }, "A\xF1adir")));
+  }, "Agregar"))));
 };
 
 var _default = Product;
@@ -34403,6 +34423,8 @@ exports.ProductsList = void 0;
 var _react = _interopRequireWildcard(require("react"));
 
 var _RangeSlider = _interopRequireDefault(require("../components/RangeSlider"));
+
+var _Slider = _interopRequireDefault(require("../components/Slider"));
 
 var _Product = _interopRequireDefault(require("../components/Product"));
 
@@ -34488,7 +34510,6 @@ var rangeFields = {
 
 var ProductsList = function ProductsList(_ref2) {
   var products = _ref2.products,
-      cart = _ref2.cart,
       addToCart = _ref2.addToCart;
   var ranges = (0, _react.useMemo)(function () {
     return getRanges(products, rangeFields);
@@ -34497,63 +34518,105 @@ var ProductsList = function ProductsList(_ref2) {
     return getInitialFilters(ranges);
   }, []);
 
-  var _useState = (0, _react.useState)(initialFilters),
+  var _useState = (0, _react.useState)(false),
       _useState2 = _slicedToArray(_useState, 2),
-      filters = _useState2[0],
-      setFilters = _useState2[1];
+      filtersVisible = _useState2[0],
+      setFiltersVisibility = _useState2[1];
 
-  var _useState3 = (0, _react.useState)(initialOrder),
+  var _useState3 = (0, _react.useState)(initialFilters),
       _useState4 = _slicedToArray(_useState3, 2),
-      order = _useState4[0],
-      setOrder = _useState4[1];
+      filters = _useState4[0],
+      setFilters = _useState4[1];
 
+  var _useState5 = (0, _react.useState)(initialOrder),
+      _useState6 = _slicedToArray(_useState5, 2),
+      order = _useState6[0],
+      setOrder = _useState6[1];
+
+  var filterButtonClasses = "button --icon";
+  if (filtersVisible) filterButtonClasses += " --active";
   var visibleProducts = (0, _react.useMemo)(function () {
     return products.slice(0).filter(getFilters(filters)).sort(getSort(order));
   }, [products, filters, order]);
-  return _react.default.createElement("div", null, _react.default.createElement("br", null), _react.default.createElement("div", null, _react.default.createElement("input", {
+
+  var setFilter = function setFilter(newFilters) {
+    return setFilters(_objectSpread({}, filters, newFilters));
+  };
+
+  return _react.default.createElement("div", null, _react.default.createElement("div", {
+    className: "cart-filters"
+  }, _react.default.createElement("div", {
+    className: "cart-filters-left"
+  }, _react.default.createElement("input", {
     type: "text",
     placeholder: "Buscar...",
+    className: "input --expand",
     value: filters.query,
     onKeyUp: function onKeyUp(e) {
-      return setFilters(_objectSpread({}, filters, {
+      return setFilter({
         query: e.target.value.trim()
-      }));
+      });
     },
     onChange: function onChange(e) {
-      return setFilters(_objectSpread({}, filters, {
+      return setFilter({
         query: e.target.value.trim()
-      }));
+      });
     }
-  })), _react.default.createElement("label", null, _react.default.createElement("input", {
-    type: "checkbox",
-    checked: filters.onlyAvailable,
-    onChange: function onChange(e) {
-      return setFilters(_objectSpread({}, filters, {
-        onlyAvailable: e.target.checked
-      }));
+  })), _react.default.createElement("div", null, _react.default.createElement("button", {
+    type: "button",
+    className: filterButtonClasses,
+    onClick: function onClick() {
+      return setFiltersVisibility(!filtersVisible);
     }
-  }), _react.default.createElement("span", null, "Only show available products")), _react.default.createElement(_RangeSlider.default, {
+  }, _react.default.createElement("i", {
+    className: "material-icons"
+  }, "filter_list")))), filtersVisible && _react.default.createElement("div", {
+    className: "cart-filters-extra"
+  }, _react.default.createElement("label", {
+    className: "form-row"
+  }, _react.default.createElement("span", {
+    className: "form-label"
+  }, "Precio entre"), _react.default.createElement(_RangeSlider.default, {
     value: filters.priceRange,
     min: ranges.price[0],
     max: ranges.price[1],
     step: 100,
     onChange: function onChange(value) {
-      return setFilters(_objectSpread({}, filters, {
+      return setFilter({
         priceRange: value
-      }));
+      });
     }
-  }), _react.default.createElement("div", null, _react.default.createElement("input", {
-    type: "range",
+  }), _react.default.createElement("div", {
+    className: "row"
+  }, _react.default.createElement("div", {
+    className: "flex1"
+  }, _react.default.createElement("span", {
+    className: "badge-span"
+  }, "$ ", filters.priceRange[0].toLocaleString())), _react.default.createElement("div", null, _react.default.createElement("span", {
+    className: "badge-span"
+  }, "$ ", filters.priceRange[1].toLocaleString())))), _react.default.createElement("label", {
+    className: "form-row"
+  }, _react.default.createElement("span", {
+    className: "form-label"
+  }, "Cantidad mayor a"), _react.default.createElement(_Slider.default, {
     value: filters.quantityAbove,
     min: ranges.quantity[0],
     max: ranges.quantity[1],
     step: 10,
     onChange: function onChange(e) {
-      return setFilters(_objectSpread({}, filters, {
+      return setFilter({
         quantityAbove: e.target.value
-      }));
+      });
     }
-  }), _react.default.createElement("span", null, "M\xE1s de "), _react.default.createElement("span", null, filters.quantityAbove)), _react.default.createElement("div", null, _react.default.createElement("label", null, _react.default.createElement("input", {
+  }), _react.default.createElement("span", {
+    className: "badge-span"
+  }, filters.quantityAbove)), _react.default.createElement("div", {
+    className: "form-row"
+  }, _react.default.createElement("div", {
+    className: "form-label"
+  }, "Ordenar por"), _react.default.createElement("label", {
+    className: "hidden-box"
+  }, _react.default.createElement("input", {
     type: "radio",
     name: "orderBy",
     value: "name",
@@ -34563,7 +34626,11 @@ var ProductsList = function ProductsList(_ref2) {
         by: e.target.value
       }));
     }
-  }), _react.default.createElement("span", null, "Nombre")), _react.default.createElement("label", null, _react.default.createElement("input", {
+  }), _react.default.createElement("i", {
+    className: "material-icons"
+  }, order.by === "name" ? "radio_button_checked" : "radio_button_unchecked"), _react.default.createElement("span", null, "Nombre")), _react.default.createElement("label", {
+    className: "hidden-box"
+  }, _react.default.createElement("input", {
     type: "radio",
     name: "orderBy",
     value: "price",
@@ -34573,7 +34640,11 @@ var ProductsList = function ProductsList(_ref2) {
         by: e.target.value
       }));
     }
-  }), _react.default.createElement("span", null, "Price")), _react.default.createElement("label", null, _react.default.createElement("input", {
+  }), _react.default.createElement("i", {
+    className: "material-icons"
+  }, order.by === "price" ? "radio_button_checked" : "radio_button_unchecked"), _react.default.createElement("span", null, "Price")), _react.default.createElement("label", {
+    className: "hidden-box"
+  }, _react.default.createElement("input", {
     type: "radio",
     name: "orderBy",
     value: "quantity",
@@ -34583,19 +34654,39 @@ var ProductsList = function ProductsList(_ref2) {
         by: e.target.value
       }));
     }
-  }), _react.default.createElement("span", null, "Quantity"))), _react.default.createElement("br", null), visibleProducts.map(function (p) {
+  }), _react.default.createElement("i", {
+    className: "material-icons"
+  }, order.by === "quantity" ? "radio_button_checked" : "radio_button_unchecked"), _react.default.createElement("span", null, "Quantity"))), _react.default.createElement("label", {
+    className: "form-row hidden-box"
+  }, _react.default.createElement("input", {
+    type: "checkbox",
+    checked: filters.onlyAvailable,
+    onChange: function onChange(e) {
+      return setFilter({
+        onlyAvailable: e.target.checked
+      });
+    }
+  }), _react.default.createElement("i", {
+    className: "material-icons"
+  }, filters.onlyAvailable ? "check_box" : "check_box_outline_blank"), _react.default.createElement("span", null, "Mostar s\xF3lo productos disponibles"))), visibleProducts.length === 0 && _react.default.createElement("div", {
+    className: "col full --center-center"
+  }, _react.default.createElement("div", null, _react.default.createElement("p", {
+    className: "txt-light"
+  }, "No se encontraron productos, intenta ajustar los filtros."))), visibleProducts.length > 0 && _react.default.createElement("div", {
+    className: "products-cont"
+  }, visibleProducts.map(function (p) {
     return _react.default.createElement(_Product.default, {
       key: p.id,
       product: p,
-      onClick: function onClick(e) {
+      onClick: function onClick() {
         return addToCart(p.id);
       }
     });
-  }));
+  })));
 };
 
 exports.ProductsList = ProductsList;
-},{"react":"../node_modules/react/index.js","../components/RangeSlider":"components/RangeSlider.jsx","../components/Product":"components/Product.jsx"}],"containers/SubCategoriesList.jsx":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","../components/RangeSlider":"components/RangeSlider.jsx","../components/Slider":"components/Slider.jsx","../components/Product":"components/Product.jsx"}],"containers/SubCategoriesList.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -34610,7 +34701,7 @@ var _reactRouterDom = require("react-router-dom");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var categoryLink = function categoryLink(baseIds, id) {
-  return "/categories/".concat(baseIds.join("/"), "/").concat(id);
+  return "/cat/".concat(baseIds.join("/"), "/").concat(id);
 };
 
 var SubCategoriesList = function SubCategoriesList(_ref) {
@@ -34788,13 +34879,31 @@ function (_PureComponent) {
         products: getProducts(cat.id)
       }, rest)); // else products
 
-      return _react.default.createElement("div", null, _react.default.createElement("h1", null, cat.name), breadcrumb.length > 0 && _react.default.createElement("div", null, breadcrumb.map(function (c, i) {
+      return _react.default.createElement("div", {
+        className: "view-wrapper category-view"
+      }, _react.default.createElement("div", {
+        className: "cat-view-header"
+      }, _react.default.createElement("div", {
+        className: "wrapper"
+      }, _react.default.createElement("div", {
+        className: "cat-view-header-inner"
+      }, _react.default.createElement("div", {
+        className: "cat-view-header-left"
+      }, breadcrumb.length > 1 && _react.default.createElement("div", null, breadcrumb.slice(0, -1).map(function (c, i) {
         return _react.default.createElement("span", {
+          className: "bc-item",
           key: i
         }, c.name);
       })
       /* eslint-disable-line */
-      ), _react.default.createElement("div", null, content));
+      ), _react.default.createElement("div", {
+        className: "cat-view-title"
+      }, cat.name)), _react.default.createElement("div", {
+        id: "header-right",
+        className: "cat-view-header-right"
+      })))), _react.default.createElement("div", {
+        className: "wrapper cat-view-content"
+      }, content));
     }
   }]);
 
@@ -34824,6 +34933,8 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _reactRedux = require("react-redux");
 
+var _reactTransitionGroup = require("react-transition-group");
+
 var _api = require("../api");
 
 var _actions = require("../actions");
@@ -34840,56 +34951,52 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 var Cart =
 /*#__PURE__*/
 function (_PureComponent) {
   _inherits(Cart, _PureComponent);
 
-  function Cart(props) {
-    var _this;
-
+  function Cart() {
     _classCallCheck(this, Cart);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Cart).call(this, props));
-    _this.state = {
-      collapsed: true
-    };
-    _this.onClick = _this.onClick.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    return _this;
+    return _possibleConstructorReturn(this, _getPrototypeOf(Cart).apply(this, arguments));
   }
 
   _createClass(Cart, [{
-    key: "onClick",
-    value: function onClick() {
-      document.body.classList.toggle("--cart-opened");
-      this.setState({
-        collapsed: !document.body.classList.contains("--cart-opened")
-      });
-    }
-  }, {
     key: "renderContent",
     value: function renderContent() {
       var _this$props = this.props,
           items = _this$props.items,
           removeFromCart = _this$props.removeFromCart,
-          checkout = _this$props.checkout,
           setQuantityInCart = _this$props.setQuantityInCart;
-      return _react.default.createElement("div", {
-        className: "wrapper cart-cont"
-      }, _react.default.createElement("h2", null, "Carrito"), items.map(function (_ref) {
+
+      if (items.length === 0) {
+        return _react.default.createElement("div", {
+          className: "col full --center-center"
+        }, _react.default.createElement("div", null, _react.default.createElement("p", {
+          className: "txt-light"
+        }, "A\xFAn no agregas nada a tu carrito.")));
+      }
+
+      var rows = items.map(function (_ref) {
         var product = _ref.product,
             quantity = _ref.quantity;
-        return _react.default.createElement("div", {
+        return _react.default.createElement("tr", {
           key: product.id
-        }, _react.default.createElement("div", null, product.name), _react.default.createElement("div", null, _react.default.createElement("input", {
+        }, _react.default.createElement("td", null, product.name), _react.default.createElement("td", {
+          style: {
+            textAlign: "center"
+          }
+        }, _react.default.createElement("input", {
+          className: "input",
           type: "number",
           min: "1",
           max: product.quantity,
@@ -34897,42 +35004,78 @@ function (_PureComponent) {
           onChange: function onChange(e) {
             return setQuantityInCart(product.id, e.target.value);
           }
-        })), _react.default.createElement("div", null, _react.default.createElement("button", {
+        })), _react.default.createElement("td", {
+          style: {
+            textAlign: "center"
+          }
+        }, "$ ", product.price.toLocaleString()), _react.default.createElement("td", {
+          style: {
+            width: "auto",
+            textAlign: "right"
+          }
+        }, _react.default.createElement("button", {
           type: "button",
+          className: "button --icon",
           onClick: function onClick() {
             return removeFromCart(product.id);
           }
-        }, "Quitar")));
-      }), _react.default.createElement("div", null, _react.default.createElement("button", {
-        type: "button",
-        onClick: checkout
-      }, "CHECKOUT")));
+        }, _react.default.createElement("i", {
+          className: "material-icons"
+        }, "close"))));
+      });
+      return _react.default.createElement("div", {
+        className: "wrapper"
+      }, _react.default.createElement("table", {
+        className: "cart-table"
+      }, _react.default.createElement("tr", null, _react.default.createElement("th", {
+        style: {
+          textAlign: "left"
+        }
+      }, "\xCDtem"), _react.default.createElement("th", null, "Cant"), _react.default.createElement("th", null, "Precio")), rows));
     }
   }, {
     key: "render",
     value: function render() {
-      var items = this.props.items;
-      var collapsed = this.state.collapsed;
-      var totalItems = items.reduce(function (a, b) {
-        return a + b.quantity;
+      var _this$props2 = this.props,
+          hidden = _this$props2.hidden,
+          checkout = _this$props2.checkout,
+          items = _this$props2.items;
+      var total = items.reduce(function (a, _ref2) {
+        var product = _ref2.product,
+            quantity = _ref2.quantity;
+        return a + product.price * quantity;
       }, 0);
-      var buttonClasses = "button --icon";
-      if (!collapsed) buttonClasses += " --active";
-      return _react.default.createElement("div", null, _react.default.createElement("button", {
+      return _react.default.createElement(_reactTransitionGroup.CSSTransition, {
+        in: !hidden,
+        classNames: "cart-anim",
+        timeout: 250,
+        mountOnEnter: true,
+        unmountOnExit: true
+      }, _react.default.createElement(_react.Fragment, null, _react.default.createElement("div", {
+        className: "cart-cont col"
+      }, _react.default.createElement("div", {
+        className: "wrapper cart-header"
+      }, "Tu Carrito"), _react.default.createElement("div", {
+        className: "scrollable"
+      }, this.renderContent()), total !== 0 && _react.default.createElement("div", {
+        className: "wrapper cart-footer"
+      }, _react.default.createElement("div", {
+        className: "cart-total"
+      }, "Total $ ", total.toLocaleString()), _react.default.createElement("div", {
+        className: "flex1 text-right"
+      }, _react.default.createElement("button", {
         type: "button",
-        className: buttonClasses,
-        onClick: this.onClick
-      }, totalItems !== 0 && _react.default.createElement("span", null, "(", totalItems, ")"), _react.default.createElement("i", {
-        className: "material-icons"
-      }, "shopping_cart")), !collapsed && this.renderContent());
+        className: "button --normal",
+        onClick: checkout
+      }, "Checkout"))))));
     }
   }]);
 
   return Cart;
 }(_react.PureComponent);
 
-var mapStateToProps = function mapStateToProps(_ref2) {
-  var cart = _ref2.cart;
+var mapStateToProps = function mapStateToProps(_ref3) {
+  var cart = _ref3.cart;
   var items = Object.keys(cart).map(function (id) {
     return {
       quantity: cart[id],
@@ -34954,7 +35097,7 @@ var _default = (0, _reactRedux.connect)(mapStateToProps, {
 })(Cart);
 
 exports.default = _default;
-},{"react":"../node_modules/react/index.js","react-redux":"../node_modules/react-redux/es/index.js","../api":"api/index.js","../actions":"actions/index.js"}],"components/NavBar.jsx":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-redux":"../node_modules/react-redux/es/index.js","react-transition-group":"../node_modules/react-transition-group/index.js","../api":"api/index.js","../actions":"actions/index.js"}],"components/NavBar.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -34964,11 +35107,33 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
+var _reactRedux = require("react-redux");
+
+var _reactRouterDom = require("react-router-dom");
+
 var _Cart = _interopRequireDefault(require("../containers/Cart"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
@@ -34978,7 +35143,9 @@ function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = 
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var NavBar = function NavBar() {
+var NavBar = function NavBar(_ref) {
+  var quantityInCart = _ref.quantityInCart;
+
   var _useState = (0, _react.useState)(true),
       _useState2 = _slicedToArray(_useState, 2),
       cartHidden = _useState2[0],
@@ -34994,15 +35161,56 @@ var NavBar = function NavBar() {
   return _react.default.createElement(_react.Fragment, null, _react.default.createElement("div", {
     className: "nav-bar"
   }, _react.default.createElement("div", {
-    className: "full row wrapper --center"
-  }, _react.default.createElement("div", {
-    className: "flex1"
-  }, "El Barat\xF3n"), _react.default.createElement(_Cart.default, null))));
+    className: "nav-bar-wrapper row --center"
+  }, _react.default.createElement(_reactRouterDom.Link, {
+    to: "/",
+    className: "flex1 nav-bar-logo"
+  }, "El Barat\xF3n"), _react.default.createElement("button", {
+    type: "button",
+    className: buttonClasses,
+    onClick: onClick
+  }, quantityInCart !== 0 && _react.default.createElement("span", null, "(", quantityInCart, ")"), _react.default.createElement("i", {
+    className: "material-icons"
+  }, "shopping_cart")))), _react.default.createElement(_Cart.default, {
+    hidden: cartHidden
+  }));
 };
 
-var _default = NavBar;
+var Intermediary =
+/*#__PURE__*/
+function (_PureComponent) {
+  _inherits(Intermediary, _PureComponent);
+
+  function Intermediary() {
+    _classCallCheck(this, Intermediary);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(Intermediary).apply(this, arguments));
+  }
+
+  _createClass(Intermediary, [{
+    key: "render",
+    value: function render() {
+      return _react.default.createElement(NavBar, this.props);
+    }
+  }]);
+
+  return Intermediary;
+}(_react.PureComponent);
+
+var mapStateToProps = function mapStateToProps(_ref2) {
+  var cart = _ref2.cart;
+  var quantityInCart = Object.values(cart).reduce(function (a, b) {
+    return a + b;
+  }, 0);
+  return {
+    quantityInCart: quantityInCart
+  };
+};
+
+var _default = (0, _reactRedux.connect)(mapStateToProps, null)(Intermediary);
+
 exports.default = _default;
-},{"react":"../node_modules/react/index.js","../containers/Cart":"containers/Cart.jsx"}],"containers/Root.jsx":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-redux":"../node_modules/react-redux/es/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","../containers/Cart":"containers/Cart.jsx"}],"containers/Root.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -35030,7 +35238,7 @@ var Root = function Root(_ref) {
   var location = _ref.location;
   return _react.default.createElement("div", {
     className: "root-wrapper"
-  }, _react.default.createElement(_NavBar.default, null), _react.default.createElement(_reactTransitionGroup.TransitionGroup, {
+  }, _react.default.createElement(_reactTransitionGroup.TransitionGroup, {
     className: "content-wrapper"
   }, _react.default.createElement(_reactTransitionGroup.CSSTransition, {
     key: location.key,
@@ -35045,7 +35253,7 @@ var Root = function Root(_ref) {
   }), _react.default.createElement(_reactRouterDom.Route, {
     path: "/cat/:ids*",
     component: _CategoryView.default
-  })))));
+  })))), _react.default.createElement(_NavBar.default, null));
 };
 
 var _default = (0, _reactRouterDom.withRouter)(Root);
@@ -35300,7 +35508,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64963" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55405" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

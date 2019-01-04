@@ -1,0 +1,35 @@
+.product
+  padding: 1rem
+  background-color: white
+  box-shadow: 0 2px 15px rgba(black, 0.1)
+  border-radius: $radius
+  margin-bottom: 1.5rem
+
+.product-title
+  font-size: 1.2rem
+  font-weight: 900
+  margin-bottom: 0.5rem
+
+.product-price
+  font-size: 1.2rem
+  color: rgba(black, 0.5)
+  margin-right: 0.5rem
+
+.product-quantity
+  margin-bottom: 1rem
+
++after(phone-land)
+  .products-cont
+    margin-right: -1rem
+  .product
+    display: inline-block
+    width: calc(50% - 2rem)
+    margin-right: 1rem
+
++after(phone-land)
+  .product
+    width: calc(33.3333% - 1rem)
+
++after(tablet-land)
+  .product
+    width: calc(25% - 1rem)

@@ -25,12 +25,9 @@ const RangeSlider = ({ value, min, max, onChange: onChangeProp, ...rest }) => {
   };
 
   return (
-    <div>
+    <div className="rangeslider --expand">
       <Slider {...props} name="min" value={range[0]} />
       <Slider {...props} name="max" value={range[1]} />
-      <div>
-        {range.join(",")}
-      </div>
     </div>
   );
 };

@@ -4,12 +4,27 @@
   margin: 0
   border: none
   background: none
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  &:focus
+    outline: none
+  &.--normal
+    width: 100%
+    max-width: 200px
+    background-color: $primary-color
+    color: white
+    text-transform: uppercase
+    color: white
+    height: 42px
+    padding: 0 2rem
+    font-weight: 900
+    letter-spacing: 0.1em
+    border-radius: $radius
   &.--icon
-    +size(2rem)
-    display: inline-flex
-    align-items: center
-    justify-content: center
+    font-weight: 900
+    color: rgba(black, 0.3)
     i
-      color: gray
+      color: rgba(black, 0.3)
     &.--active i
       color: $primary-color

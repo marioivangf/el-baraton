@@ -36,14 +36,23 @@ class CategoryView extends PureComponent {
       ? <SubCategoriesList ids={idsArr} categories={cat.sublevels} {...rest} /> // render them...
       : <ProductsList ids={idsArr} products={getProducts(cat.id)} {...rest} />; // else products
     return (
-      <div>
-        <h1>{cat.name}</h1>
-        {(breadcrumb.length > 0) && (
-          <div>
-            {breadcrumb.map((c, i) => <span key={i}>{c.name}</span>) /* eslint-disable-line */}
+      <div className="view-wrapper category-view">
+        <div className="cat-view-header">
+          <div className="wrapper">
+            <div className="cat-view-header-inner">
+              <div className="cat-view-header-left">
+                {(breadcrumb.length > 1) && (
+                  <div>
+                    {breadcrumb.slice(0, -1).map((c, i) => <span className="bc-item" key={i}>{c.name}</span>) /* eslint-disable-line */}
+                  </div>
+                )}
+                <div className="cat-view-title">{cat.name}</div>
+              </div>
+              <div id="header-right" className="cat-view-header-right" />
+            </div>
           </div>
-        )}
-        <div>
+        </div>
+        <div className="wrapper cat-view-content">
           {content}
         </div>
       </div>

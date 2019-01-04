@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 
 import RangeSlider from "../components/RangeSlider";
+import Slider from "../components/Slider";
 import Product from "../components/Product";
 
 const getFilters = f => (p) => {
@@ -58,113 +59,152 @@ const rangeFields = {
   quantity: 10,
 };
 
-export const ProductsList = ({ products, cart, addToCart }) => {
+export const ProductsList = ({ products, addToCart }) => {
   const ranges = useMemo(() => getRanges(products, rangeFields), [products]);
   const initialFilters = useMemo(() => getInitialFilters(ranges), []);
+  const [filtersVisible, setFiltersVisibility] = useState(false);
   const [filters, setFilters] = useState(initialFilters);
   const [order, setOrder] = useState(initialOrder);
+  let filterButtonClasses = "button --icon";
+  if (filtersVisible) filterButtonClasses += " --active";
   const visibleProducts = useMemo(() => products
     .slice(0)
     .filter(getFilters(filters))
     .sort(getSort(order)),
   [products, filters, order]);
+  const setFilter = newFilters => setFilters({ ...filters, ...newFilters });
   return (
     <div>
-      <br />
-      <div>
-        <input
-          type="text"
-          placeholder="Buscar..."
-          value={filters.query}
-          onKeyUp={e => setFilters({
-            ...filters,
-            query: e.target.value.trim(),
-          })}
-          onChange={e => setFilters({
-            ...filters,
-            query: e.target.value.trim(),
-          })}
-        />
-      </div>
-      <label>
-        <input
-          type="checkbox"
-          checked={filters.onlyAvailable}
-          onChange={e => setFilters({
-            ...filters,
-            onlyAvailable: e.target.checked,
-          })}
-        />
-        <span>Only show available products</span>
-      </label>
-      <RangeSlider
-        value={filters.priceRange}
-        min={ranges.price[0]}
-        max={ranges.price[1]}
-        step={100}
-        onChange={value => setFilters({
-          ...filters,
-          priceRange: value,
-        })}
-      />
-      <div>
-        <input
-          type="range"
-          value={filters.quantityAbove}
-          min={ranges.quantity[0]}
-          max={ranges.quantity[1]}
-          step={10}
-          onChange={e => setFilters({
-            ...filters,
-            quantityAbove: e.target.value,
-          })}
-        />
-        <span>Más de </span>
-        <span>{filters.quantityAbove}</span>
-      </div>
-      <div>
-        <label>
+      <div className="cart-filters">
+        <div className="cart-filters-left">
           <input
-            type="radio"
-            name="orderBy"
-            value="name"
-            checked={order.by === "name"}
-            onChange={e => setOrder({
-              ...order,
-              by: e.target.value,
-            })}
+            type="text"
+            placeholder="Buscar..."
+            className="input --expand"
+            value={filters.query}
+            onKeyUp={e => setFilter({ query: e.target.value.trim() })}
+            onChange={e => setFilter({ query: e.target.value.trim() })}
           />
-          <span>Nombre</span>
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="orderBy"
-            value="price"
-            checked={order.by === "price"}
-            onChange={e => setOrder({
-              ...order,
-              by: e.target.value,
-            })}
-          />
-          <span>Price</span>
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="orderBy"
-            value="quantity"
-            checked={order.by === "quantity"}
-            onChange={e => setOrder({
-              ...order,
-              by: e.target.value,
-            })}
-          />
-          <span>Quantity</span>
-        </label>
+        </div>
+        <div>
+          <button type="button" className={filterButtonClasses} onClick={() => setFiltersVisibility(!filtersVisible)}>
+            <i className="material-icons">filter_list</i>
+          </button>
+        </div>
       </div>
-      <br />
-      {visibleProducts.map(p => <Product key={p.id} product={p} onClick={e => addToCart(p.id)} />)}
+      {filtersVisible && (
+        <div className="cart-filters-extra">
+          <label className="form-row">
+            <span className="form-label">Precio entre</span>
+            <RangeSlider
+              value={filters.priceRange}
+              min={ranges.price[0]}
+              max={ranges.price[1]}
+              step={100}
+              onChange={value => setFilter({ priceRange: value })}
+            />
+            <div className="row">
+              <div className="flex1">
+                <span className="badge-span">$ {filters.priceRange[0].toLocaleString()}</span>
+              </div>
+              <div>
+                <span className="badge-span">$ {filters.priceRange[1].toLocaleString()}</span>
+              </div>
+            </div>
+          </label>
+          <label className="form-row">
+            <span className="form-label">Cantidad mayor a</span>
+            <Slider
+              value={filters.quantityAbove}
+              min={ranges.quantity[0]}
+              max={ranges.quantity[1]}
+              step={10}
+              onChange={e => setFilter({ quantityAbove: e.target.value })}
+            />
+            <span className="badge-span">{filters.quantityAbove}</span>
+          </label>
+          <div className="form-row">
+            <div className="form-label">Ordenar por</div>
+            <label className="hidden-box">
+              <input
+                type="radio"
+                name="orderBy"
+                value="name"
+                checked={order.by === "name"}
+                onChange={e => setOrder({
+                  ...order,
+                  by: e.target.value,
+                })}
+              />
+              <i className="material-icons">
+                {order.by === "name" ? "radio_button_checked" : "radio_button_unchecked"}
+              </i>
+              <span>Nombre</span>
+            </label>
+            <label className="hidden-box">
+              <input
+                type="radio"
+                name="orderBy"
+                value="price"
+                checked={order.by === "price"}
+                onChange={e => setOrder({
+                  ...order,
+                  by: e.target.value,
+                })}
+              />
+              <i className="material-icons">
+                {order.by === "price" ? "radio_button_checked" : "radio_button_unchecked"}
+              </i>
+              <span>Price</span>
+            </label>
+            <label className="hidden-box">
+              <input
+                type="radio"
+                name="orderBy"
+                value="quantity"
+                checked={order.by === "quantity"}
+                onChange={e => setOrder({
+                  ...order,
+                  by: e.target.value,
+                })}
+              />
+              <i className="material-icons">
+                {order.by === "quantity" ? "radio_button_checked" : "radio_button_unchecked"}
+              </i>
+              <span>Quantity</span>
+            </label>
+          </div>
+          <label className="form-row hidden-box">
+            <input
+              type="checkbox"
+              checked={filters.onlyAvailable}
+              onChange={e => setFilter({ onlyAvailable: e.target.checked })}
+            />
+            <i className="material-icons">
+              {filters.onlyAvailable ? "check_box" : "check_box_outline_blank"}
+            </i>
+            <span>Mostar sólo productos disponibles</span>
+          </label>
+        </div>
+      )}
+      {visibleProducts.length === 0 && (
+        <div className="col full --center-center">
+          <div>
+            <p className="txt-light">No se encontraron productos, intenta ajustar los filtros.</p>
+          </div>
+        </div>
+      )}
+      {visibleProducts.length > 0 && (
+        <div className="products-cont">
+          {visibleProducts.map(p => (
+            <Product
+              key={p.id}
+              product={p}
+              onClick={() => addToCart(p.id)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

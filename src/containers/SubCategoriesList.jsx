@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const categoryLink = (baseIds, id) => `/categories/${baseIds.join("/")}/${id}`;
+const categoryLink = (baseIds, id) => `/cat/${baseIds.join("/")}/${id}`;
 
 export const SubCategoriesList = ({ categories, ids }) => (
   <div>

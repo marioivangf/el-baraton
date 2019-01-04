@@ -8,8 +8,8 @@ html
 body
   margin: 0
 
-html, body, #root, #root > div
-  height: 100%
+.content-wrapper
+  min-height: 100vh
 
 .wrapper
   +padding(null 2rem)
@@ -29,11 +29,24 @@ html, body, #root, #root > div
   &.--center-center
     align-items: center
     justify-content: center
+  &.--wrap
+    flex-wrap: wrap
 
 .flex1
   flex: 1
 
 .full
+  height: 100%
+
+.text-right
+  text-align: right
+.text-nowrap
+  white-space: nowrap
+
+.scrollable
+  flex: 1
+  overflow-x: none
+  overflow-y: auto
   height: 100%
 
 +after(tablet)

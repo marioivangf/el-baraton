@@ -1,6 +1,6 @@
 import React from "react";
 
-const Slider = props => <input type="range" {...props} />;
+const Slider = props => <input className="slider --expand" type="range" {...props} />;
 
 Slider.defaultProps = {
   step: 1,

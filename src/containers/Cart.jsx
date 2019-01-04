@@ -1,68 +1,85 @@
-import React, { PureComponent } from "react";
+import React, { Fragment, PureComponent } from "react";
 import { connect } from "react-redux";
+import { CSSTransition } from "react-transition-group";
 
 import { products } from "../api";
 import { addToCart, removeFromCart, setQuantityInCart, checkout } from "../actions";
 
 class Cart extends PureComponent {
-  constructor (props) {
-    super(props);
-    this.state = { collapsed: true };
-    this.onClick = this.onClick.bind(this);
-  }
-
-  onClick () {
-    document.body.classList.toggle("--cart-opened");
-    this.setState({
-      collapsed: !document.body.classList.contains("--cart-opened"),
-    });
-  }
-
   renderContent () {
     const {
       /* eslint-disable no-shadow */
       items,
       removeFromCart,
-      checkout,
       setQuantityInCart,
     } = this.props;
-    return (
-      <div className="wrapper cart-cont">
-        <h2>Carrito</h2>
-        {items.map(({ product, quantity }) => (
-          <div key={product.id}>
-            <div>
-              {product.name}
-            </div>
-            <div>
-              <input type="number" min="1" max={product.quantity} value={quantity} onChange={e => setQuantityInCart(product.id, e.target.value)} />
-            </div>
-            <div>
-              <button type="button" onClick={() => removeFromCart(product.id)}>Quitar</button>
-            </div>
+    if (items.length === 0) {
+      return (
+        <div className="col full --center-center">
+          <div>
+            <p className="txt-light">Aún no agregas nada a tu carrito.</p>
           </div>
-        ))}
-        <div>
-          <button type="button" onClick={checkout}>CHECKOUT</button>
         </div>
+      );
+    }
+    const rows = items.map(({ product, quantity }) => (
+      <tr key={product.id}>
+        <td>
+          {product.name}
+        </td>
+        <td style={{ textAlign: "center" }}>
+          <input className="input" type="number" min="1" max={product.quantity} value={quantity} onChange={e => setQuantityInCart(product.id, e.target.value)} />
+        </td>
+        <td style={{ textAlign: "center" }}>
+          $ {(product.price).toLocaleString()}
+        </td>
+        <td style={{ width: "auto", textAlign: "right" }}>
+          <button type="button" className="button --icon" onClick={() => removeFromCart(product.id)}>
+            <i className="material-icons">close</i>
+          </button>
+        </td>
+      </tr>
+    ));
+    return (
+      <div className="wrapper">
+        <table className="cart-table">
+          <tr>
+            <th style={{ textAlign: "left" }}>Ítem</th>
+            <th>Cant</th>
+            <th>Precio</th>
+          </tr>
+          {rows}
+        </table>
       </div>
     );
   }
 
   render () {
-    const { items } = this.props;
-    const { collapsed } = this.state;
-    const totalItems = items.reduce((a, b) => a + b.quantity, 0);
-    let buttonClasses = "button --icon";
-    if (!collapsed) buttonClasses += " --active";
+    const { hidden, checkout, items } = this.props;
+    const total = items.reduce((a, { product, quantity }) => (a + (product.price * quantity)), 0);
     return (
-      <div>
-        <button type="button" className={buttonClasses} onClick={this.onClick}>
-          {(totalItems !== 0) && <span>({ totalItems })</span>}
-          <i className="material-icons">shopping_cart</i>
-        </button>
-        {!collapsed && this.renderContent()}
-      </div>
+      <CSSTransition in={!hidden} classNames="cart-anim" timeout={250} mountOnEnter unmountOnExit>
+        <Fragment>
+          <div className="cart-cont col">
+            <div className="wrapper cart-header">
+              Tu Carrito
+            </div>
+            <div className="scrollable">
+              {this.renderContent()}
+            </div>
+            {total !== 0 && (
+              <div className="wrapper cart-footer">
+                <div className="cart-total">
+                  Total $ {total.toLocaleString()}
+                </div>
+                <div className="flex1 text-right">
+                  <button type="button" className="button --normal" onClick={checkout}>Checkout</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </Fragment>
+      </CSSTransition>
     );
   }
 }

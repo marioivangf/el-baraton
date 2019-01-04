@@ -9,7 +9,6 @@ import NavBar from "../components/NavBar";
 const Root = ({ location }) => {
   return (
     <div className="root-wrapper">
-      <NavBar />
       <TransitionGroup className="content-wrapper">
         <CSSTransition key={location.key} classNames="page-trans" timeout={250}>
           <Switch location={location}>
@@ -18,6 +17,7 @@ const Root = ({ location }) => {
           </Switch>
         </CSSTransition>
       </TransitionGroup>
+      <NavBar />
     </div>
   );
 };

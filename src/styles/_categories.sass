@@ -12,55 +12,102 @@
 .categories > .category
   width: 100%
   text-align: center
-  padding: 1rem
-  background-color: white
-  margin-right: 2rem
   border-radius: 8px
   box-shadow: 0 5px 20px rgba(black, 0.1)
   margin-bottom: 1.5rem
+  color: white
+  overflow: hidden
   & > .category-title
-    font-size: 1.4rem
+    font-size: 1.2rem
+    padding: 1rem
+  &:nth-child(1n)
+    background-color: #53d397
+  &:nth-child(2n)
+    background-color: coral
+  &:nth-child(3n)
+    background-color: #84b9ef
+  &:nth-child(4n)
+    background-color: #fdb44b
 
 .category .category
-  padding: 0.5rem
-  background-color: rgba(black, 0.1)
+  .category-title
+    display: block
+    padding: 0.6rem
+    color: white
+  a
+    color: white
   .subcategories
-    padding: 0.5rem
+    +border-bottom-radius(8px)
+    background-color: rgba(black, 0.1)
+    //padding: 0.5rem
 
 .page-trans-enter
-  position: absolute
-  top: 0
-  right: 0
-  left: 0
-  bottom: 0
-  z-index: -1
-  .categories > .category
+  +position(absolute, 0 0 null 0)
+  &.category-view
     opacity: 0.01
     transform: scale(0.9)
+  .categories > .category
+    opacity: 0.01
+    transform: scale(0.3)
 
-.page-trans-enter-active .categories > .category
-  opacity: 1
-  transition: transform 250ms ease-out, opacity 250ms ease-out
-  transform: scale(1)
+.page-trans-enter-active
+  &.category-view
+    opacity: 1
+    transition: transform 250ms ease-out, opacity 250ms ease-out
+    transform: scale(1)
+  .categories > .category
+    opacity: 1
+    transition: transform 250ms ease-out, opacity 250ms ease-out
+    transform: scale(1)
 
-.page-trans-exit .categories
-  opacity: 1
-  transform: scale(1)
+.page-trans-exit
+  &.category-view
+    opacity: 1
+    transform: scale(1)
+  .categories
+    opacity: 1
+    transform: scale(1)
 
-.page-trans-exit-active .categories
-  opacity: 0.01
-  transform: scale(1.1)
-  transition: transform 250ms ease-out, opacity 250ms ease-out
+.page-trans-exit-active
+  &.category-view
+    opacity: 0.01
+    transition: opacity 250ms ease-out
+  .categories
+    opacity: 0.01
+    transform: scale(1.1)
+    transition: transform 250ms $swift-out, opacity 250ms ease-out
+
+// Category View
+
+.cat-view-header
+  padding: 3rem 0 2rem 0
+  background-color: $primary-color
+  color: white
+
+.cat-view-title
+  font-size: 1.8rem
+
+.bc-item
+  font-size: 0.9rem
+  &:after
+    content: " / "
+  &:last-child:after
+    content: ""
 
 +after(phone-land)
   .categories-cont
     overflow-x: auto
     overflow-y: hidden
   .categories
-    display: inline-flex
+    min-width: 100%
+    min-height: 70vh
+    display: flex
     flex-direction: row
   .categories > .category
     flex: 1
     min-width: 200px
     margin-bottom: 0
+    margin-right: 2rem
+    &:last-child
+      margin-right: 0
 

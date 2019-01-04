@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 
+import { CSSTransition } from "react-transition-group";
+
 const Category = ({ id, name, sublevels, ids }) => {
   const [collapsed, collapse] = useState(true);
   const events = useMemo(() => {
@@ -20,7 +22,7 @@ const Category = ({ id, name, sublevels, ids }) => {
   return (
     <nav className="category" {...events}>
       {sublevels
-        ? <div className="category-title">{name} {collapsed.toString()}</div>
+        ? <div className="category-title">{name}</div>
         : <Link className="category-title" to={`/cat/${ids.join("/")}/${id}`}>{name}</Link>
       }
       {(sublevels && !collapsed) && (

@@ -1,3 +1,77 @@
 .cart-cont
-  +position(fixed, 50px 0 calc(20% - 50px) 0)
-  background-color: red
+  +position(fixed, 0 0 calc(30% - 50px) 0)
+  +padding(50px null)
+  background-color: white
+  z-index: 1
+
+.cart-item
+  height: 50px
+  align-items: center
+  background-color: #F4F4F4
+  padding: 0 1rem
+
+.cart-table
+  width: 100%
+  th
+    padding: 1rem 0
+    text-transform: uppercase
+    font-weight: 900
+    color: rgba(black, 0.5)
+    font-size: 0.7rem
+    letter-spacing: 0.1em
+  td
+    padding: 0.5rem 0
+
+.cart-total
+  flex: 1
+  font-size: 1.2rem
+  font-weight: 900
+  color: rgba(black, 0.8)
+
+.cart-header
+  +padding(2rem null 0.5rem null)
+  margin-bottom: 0.5rem
+  box-shadow: 0 20px 20px white
+  position: relative
+  font-size: 1.8rem
+
+.cart-footer
+  display: flex
+  align-items: center
+  box-shadow: 0 -20px 20px white
+  padding-top: 1rem
+  position: relative
+
+.cart-filters
+  display: flex
+  padding: 1.5rem 0
+
+.cart-filters-extra
+  max-width: 420px
+  padding: 1.5rem 1rem 0.5rem 1rem
+  background-color: white
+  border-radius: $radius
+  margin-bottom: 1.5rem
+
+.cart-filters-left
+  width: 100%
+  max-width: 420px
+  margin-right: 1rem
+
+.txt-light
+  color: rgba(black, 0.5)
+
+.cart-anim-enter, .cart-anim-exit
+  transition: transform 250ms $swift-out, opacity 250ms
+
+.cart-anim-enter, .cart-anim-exit
+  // opacity: 0
+  transform: translateY(-100%)
+
+.cart-anim-enter-active
+  // opacity: 1
+  transform: translateY(0)
+
+.cart-anim-exit-active
+  // opacity: 0.01
+  transform: translateY(-100%)
